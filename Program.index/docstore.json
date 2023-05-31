@@ -1,0 +1,16 @@
+[
+    [
+        "0",
+        {
+            "pageContent": "#include <iostream>\r\n\r\nusing namespace std;\r\n\r\nint main() {\r\n\tint a = 2, b = 3, c = 4;\r\n\tint result = a + b * c; \r\n\tcout << \"Result: \" << result << endl;\r\n\r\n\tint result2 = (2 + 3) * 4; \r\n\tcout << \"Result: \" << result2 << endl;\r\n\r\n\r\n\tint sum = 55, count = 10;\r\n\tcout << \"Output: \" << sum / count << endl; \r\n\tcout << \"Output: \" << (double) sum / count << endl; \r\n\r\n\tdouble d1 = sum / count;\r\n\tcout << \"Output: \" << d1 << endl;\r\n\r\n\tdouble v = 55;\r\n\tdouble d2 = v / count; \r\n\tcout << \"Output: \" << d2 << endl; \r\n\r\n\tdouble num = 9;\r\n\tcout << sqrt(-num) << endl;\r\n\r\n\tsystem(\"pause\");\r\n\treturn(0);\r\n}",
+            "metadata": {
+                "loc": {
+                    "lines": {
+                        "from": 1,
+                        "to": 30
+                    }
+                }
+            }
+        }
+    ]
+]
