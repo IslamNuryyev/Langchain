@@ -1,0 +1,44 @@
+/*
+ * This program prompt the user for a dollar value (e.g. $27.67) and prints the number of loonies, quarters, 
+ * dimes, nickels, and pennies. Note: it doesn't print the correct result. Hint: think about the data type for 'amount'.
+ */
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	int amount(0);
+
+	cout << "Enter the amount you want to convert: $";
+	cin >> amount;
+
+	int remaining = amount * 100;
+
+	// Loonies
+	int dollars = remaining / 100;
+	remaining = remaining % 100;
+
+	// Quarters
+	int quarters = remaining / 25;
+	remaining = remaining % 25;
+	
+	// Dimes
+	int dimes = remaining / 10;
+	remaining = remaining % 10;
+
+	// Nickels
+	int nickels = remaining / 5;
+	remaining = remaining % 5;
+
+	// Pennies
+	int pennies = remaining;
+
+	cout << "The amount: $" << amount << " consists of: " << endl;
+	cout << dollars << " Loonies" << endl;
+	cout << quarters << " Quarters" << endl;
+	cout << dimes << " Dimes" << endl;
+	cout << nickels << " Nickels" << endl;
+	cout << pennies << " Pennies" << endl;
+	system("pause");
+	return(0);
+}

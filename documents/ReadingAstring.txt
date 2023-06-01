@@ -1,0 +1,16 @@
+/*
+ * This program shows how to read a string from the keyboard and print the output
+ */
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	string name; // you need to #include <string> to use string
+	cout << "Enter your name: ";
+	cin >> nme;
+	cout << "Hello " << nme << " and welcome to ENGR 1200" << endl;
+	system("pause");
+	return(0);
+}

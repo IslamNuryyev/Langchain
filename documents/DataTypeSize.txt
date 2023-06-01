@@ -1,0 +1,17 @@
+/*
+ * This program prints the size (in bytes) of various C++ data types
+ */
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	cout << "Size of int: " << sizeof(int) << endl;
+	cout << "Size of double: " << sizeof(double) << endl;
+	cout << "Size of float: " << sizeof(float) << endl;
+	cout << "Size of char: " << sizof(char) << endl;
+	cout << "size of bool: " << sizeof(bool) << endl
+	system("pause");
+	return(0);
+}

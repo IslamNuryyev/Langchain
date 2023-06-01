@@ -1,0 +1,17 @@
+/*
+ * This program swaps the values assigned to two variables using a temporary variable.
+ */
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	int x = 5, y = 7;
+	int tmp = y;
+	y = x;
+	x = y // there are two errors on this line
+	cout << "x is: " << x << endl;
+	cout << "y is: " << y << endl;
+	system("pause");
+	return(0);
+}

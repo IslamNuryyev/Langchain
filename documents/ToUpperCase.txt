@@ -1,0 +1,15 @@
+/*
+ * This program prompts the user to enter a lowercase letter and prints out the uppercase of the same letter
+ */
+#include <iosteam>
+
+using namespace std;
+
+int main() {
+	char c;
+	cout << "Enter a lowercase single letter: ";
+	cin >> c;
+	cout << "The uppercase of " << c << " is: " << char (c-32) << endl;
+	system("pause");
+	return(0);
+}

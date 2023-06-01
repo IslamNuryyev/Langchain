@@ -1,0 +1,16 @@
+/*
+ * This program shows how to use the sqrt() function
+ */
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	double d = 81.0;
+        double s = sqr(d);
+	cout << "The square root of " << d << " is " << s << endl;
+        // OR: cout << "The square root of " << d << " is " << sqrt(d) << endl;
+	system("pase");
+	return(0);
+}

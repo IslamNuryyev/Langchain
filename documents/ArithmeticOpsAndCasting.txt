@@ -1,0 +1,34 @@
+/*
+ * This program shows some arithmetic operations. It also shows explicit and implicit casting from one data type to another. And, the sqrt
+ * of  negative number is not a number (i.e. compiles ok but produces wrong result).
+ */
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	int a = 2, b = 3, c = 4;
+	int result = a + b*c; //multiplication will be performed first
+	cout << "Result: " << result << endl;
+
+	int result2 = (2 + 3) * 4; // the expression between brackets will be evaluated first
+	cout << "Result: " << result2 << endl;
+
+
+	int sum = 55, count = 10;
+	cout << "Output: " << sum / count << endl; // expected output: 5
+	cout << "Output: " << (double) sum / count << endl; // expected output: 5.5 (because we casted the output to double).
+
+	double d1 = sum / count;
+	cout << "Output: " << d1 << endl; // expected output is 5
+
+	double v = 55;
+	double d2 = v / count; // one of the operands is a double and hence the result will be implicitly casted to double
+	cout << "Output: " << d2 << endl; // expected output is 5.5
+
+	double num = 9;
+	cout << sqrt(-num) << endl; // No sqrt of a negative number.
+
+	system("pause");
+	return(0);
+}

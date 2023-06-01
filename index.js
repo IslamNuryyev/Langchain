@@ -1,61 +1,136 @@
-// 1. Import necessary modules and libraries
-import { OpenAI } from 'langchain/llms';
-import { RetrievalQAChain } from 'langchain/chains';
-import { HNSWLib } from 'langchain/vectorstores';
-import { OpenAIEmbeddings } from 'langchain/embeddings';
-import { RecursiveCharacterTextSplitter } from 'langchain/text_splitter';
-import * as fs from 'fs';
-import * as dotenv from 'dotenv';
+// 1. Import document loaders for different file formats
+import { DirectoryLoader } from "langchain/document_loaders/fs/directory";
+import { JSONLoader } from "langchain/document_loaders/fs/json";
+import { TextLoader } from "langchain/document_loaders/fs/text";
+import { CSVLoader } from "langchain/document_loaders/fs/csv";
+import { PDFLoader } from "langchain/document_loaders/fs/pdf";
 
-// 2. Load environment variables  
+// 2. Import OpenAI language model and other related modules
+import { OpenAI } from "langchain/llms/openai";
+import { RetrievalQAChain } from "langchain/chains";
+import { HNSWLib } from "langchain/vectorstores/hnswlib";
+import { OpenAIEmbeddings } from "langchain/embeddings/openai";
+import { RecursiveCharacterTextSplitter } from "langchain/text_splitter";
+
+// 3. Import Tiktoken for token counting
+import { Tiktoken } from "@dqbd/tiktoken/lite";
+import { load } from "@dqbd/tiktoken/load";
+import registry from "@dqbd/tiktoken/registry.json" assert { type: "json" };
+import models from "@dqbd/tiktoken/model_to_encoding.json" assert { type: "json" };
+
+// 4. Import dotenv for loading environment variables and fs for file system operations
+import dotenv from "dotenv";
+import fs from "fs";
 dotenv.config();
 
-// 3. Set up input data and paths
-const txtFilename = "Program";
-const question = "What is the maximum speed of Ferrari?";
-const txtPath = `./${txtFilename}.txt`;
-const VECTOR_STORE_PATH = `${txtFilename}.index`;
+// 5. Initialize the document loader with supported file formats
+const loader = new DirectoryLoader("./documents", {
+    ".json": (path) => new JSONLoader(path),
+    ".txt": (path) => new TextLoader(path),
+    ".csv": (path) => new CSVLoader(path),
+    ".pdf": (path) => new PDFLoader(path),
+});
 
-// 4. Define the main function runWithEmbeddings
-export const runWithEmbeddings = async () => {
-    // 5. Initialize the OpenAI model with an empty configuration object
-    const model = new OpenAI({});
+// 6. Load documents from the specified directory
+console.log("Loading docs...");
+const docs = await loader.load();
+console.log("Docs loaded.");
 
-    // 6. Check if the vector store file exists
-    let vectorStore;
-    if (fs.existsSync(VECTOR_STORE_PATH)) {
-        // 6.1. If the vector store file exists, load it into memory
-        console.log('Vector Exists..');
-        vectorStore = await HNSWLib.load(VECTOR_STORE_PATH, new OpenAIEmbeddings());
-    } else {
-        // 6.2. If the vector store file doesn't exist, create it
-        // 6.2.1. Read the input text file
-        const text = fs.readFileSync(txtPath, 'utf8');
-
-        // 6.2.2. Create a RecursiveCharacterTextSplitter with a specified chunk size
-        const textSplitter = new RecursiveCharacterTextSplitter({ chunkSize: 1000 });
-
-        // 6.2.3. Split the input text into documents
-        const docs = await textSplitter.createDocuments([text]);
-
-        // 6.2.4. Create a new vector store from the documents using OpenAIEmbeddings
-        vectorStore = await HNSWLib.fromDocuments(docs, new OpenAIEmbeddings());
-
-        // 6.2.5. Save the vector store to a file
-        await vectorStore.save(VECTOR_STORE_PATH);
-    }
-
-    // 7. Create a RetrievalQAChain by passing the initialized OpenAI model and the vector store retriever
-    const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever());
-
-    // 8. Call the RetrievalQAChain with the input question, and store the result in the 'res' variable
-    const res = await chain.call({
-        query: question,
-    });
-
-    // 9. Log the result to the console
-    console.log({ res });
+// 7. Define a function to calculate the cost of tokenizing the documents
+async function calculateCost() {
+    const modelName = "text-embedding-ada-002";
+    const modelKey = models[modelName];
+    const model = await load(registry[modelKey]);
+    const encoder = new Tiktoken(
+        model.bpe_ranks,
+        model.special_tokens,
+        model.pat_str
+    );
+    const tokens = encoder.encode(JSON.stringify(docs));
+    const tokenCount = tokens.length;
+    const ratePerThousandTokens = 0.0004;
+    const cost = (tokenCount / 1000) * ratePerThousandTokens;
+    encoder.free();
+    return cost;
 }
 
-// 10. Execute the main function runWithEmbeddings
-runWithEmbeddings();
+const VECTOR_STORE_PATH = "Documents.index";
+const question = "What is pwd";
+
+// 8. Define a function to normalize the content of the documents, 
+//this saves up some tokens because we are not sending additional characters in json format
+function normalizeDocuments(docs) {
+    return docs.map((doc) => {
+        if (typeof doc.pageContent === "string") {
+            return doc.pageContent;
+        } else if (Array.isArray(doc.pageContent)) {
+            return doc.pageContent.join("\n");
+        }
+    });
+}
+
+// 9. Define the main function to run the entire process
+export const run = async () => {
+    // 10. Calculate the cost of tokenizing the documents
+    console.log("Calculating cost...");
+    const cost = await calculateCost();
+    console.log("Cost calculated:", cost);
+
+    // 11. Check if the cost is within the acceptable limit, $1 in this case
+    if (cost <= 1) {
+        // 12. Initialize the OpenAI language model
+        const model = new OpenAI({}); //can use other models
+        let vectorStore;
+
+        // 13. Check if an existing vector store is available
+        console.log("Checking for existing vector store...");
+        if (fs.existsSync(VECTOR_STORE_PATH)) {
+            // 14. Load the existing vector store
+            console.log("Loading existing vector store...");
+            vectorStore = await HNSWLib.load(
+                VECTOR_STORE_PATH,
+                new OpenAIEmbeddings()
+            );
+            console.log("Vector store loaded.");
+        } else {
+            // 15. Create a new vector store if one does not exist
+            console.log("Creating new vector store...");
+            const textSplitter = new RecursiveCharacterTextSplitter({
+                chunkSize: 1000,
+            });
+
+            const normalizedDocs = normalizeDocuments(docs);
+            const splitDocs = await textSplitter.createDocuments(normalizedDocs);
+
+
+            // 16. Generate the vector store from the documents
+            vectorStore = await HNSWLib.fromDocuments(
+                splitDocs,
+                new OpenAIEmbeddings()
+            );
+
+            // 17. Save the vector store to the specified path, saves locally
+            await vectorStore.save(VECTOR_STORE_PATH);
+
+            console.log("Vector store created.");
+        }
+
+        // 18. Create a retrieval chain using the language model and vector store
+        console.log("Creating retrieval chain...");
+        const chain = RetrievalQAChain.fromLLM(model, vectorStore.asRetriever()); //this is how we query
+
+        // 19. Query the retrieval chain with the specified question
+        console.log("Querying chain...");
+        const res = await chain.call({ query: question });
+        console.log({ res });
+
+    } else {
+        // 20. If the cost exceeds the limit, skip the embedding process
+        console.log("The cost of embedding exceeds $1. Skipping embeddings.");
+    }
+}
+
+// 21. Run the main function
+run();
+
+

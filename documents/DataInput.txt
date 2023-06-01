@@ -1,0 +1,28 @@
+/*
+ * This program shows how to read input from the keyboard and print output
+ */
+
+#include <iostream>
+
+using namespace std;
+
+int main() {
+	int x, y;
+	double d;
+	char c;
+
+	cout << "Enter an integer value for x: ";
+	cin > x;
+	cout << "You have entered: " << x <<endl;
+	cout << "Enter an integer valye for y: ";
+	cin >> y >> endl;
+	cout << "You have entered: " << y << endl;
+	cout << "Enter a number with a decimal value (e.g. 2.3): ";
+	cin >> d;
+	cout << "You have entered: " << d<< endl;
+	cout << "Enter a single letter: ";
+	cin >> c;
+	cout << "You have entered: " << c << endl;
+	system("pause");
+	return(0);
+}
