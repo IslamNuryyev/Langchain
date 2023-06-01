@@ -2,19 +2,21 @@
 
 Download Node.js if you haven't already: https://nodejs.org/en
 
-## 1. In the project directory run:
+## Getting Started
 
- `npm install`
+1. In the project directory run:
 
-## 2. rename .env_sample file to .env and paste your API key there
+`npm install`
 
-## 3. Open a terminal window in the project directory and start the frontend by running this command:
+2. Rename .env_sample file to .env and paste your API key there
 
- `node index.js`
+3. Open a terminal window in the project directory and start the frontend by running this command:
 
-## 4. If you want to ask a different question modify the value of question variable in index.js file
+`node index.js`
 
- `const question = "YOUR_QUESTION`
+4. If you want to ask a different question modify the value of question variable in index.js file
+
+`const question = "YOUR_QUESTION"`
 
 
 
